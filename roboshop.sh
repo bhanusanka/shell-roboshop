@@ -7,8 +7,7 @@ ZONE_ID="Z057086315H43ZPXTV7M1"
 DOMAIN_NAME="sankadevops.site"
 
 
-for instance in ${INSTANCES[@]}{
-do 
+#for instance in ${INSTANCES[@]}{
 #for instance in ${INSTANCES[@]}
 for instance in $@
 do

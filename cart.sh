@@ -45,7 +45,7 @@ dnf install nodejs -y &>>$LOG_FILE
 VALIDATE $? "installing nodejs"
 
 id roboshop 
-if [ if $? ne 0]
+if [ $? -ne 0 ]
 then
     cartadd --system --home /app --shell /sbin/nologin --comment "roboshop system cart" roboshop &>>$LOG_FILE
     VALIDATE $? "creating roboshop system cart"

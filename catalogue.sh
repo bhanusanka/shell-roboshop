@@ -64,9 +64,7 @@ cd /app
 unzip /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "unzipping catalogue"
 
-npm init -y
-npm i --package-lock-only
-npm audit
+
 npm install 
 VALIDATE $? "installing dependencies"
 

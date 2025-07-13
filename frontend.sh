@@ -1,7 +1,7 @@
 #!/Bin/bash
 
 source ./common.sh
-check root
+check_root
 
 dnf module disable nginx -y &>>$LOG_FILE
 VALIDATE $? "Disabling default nginx"

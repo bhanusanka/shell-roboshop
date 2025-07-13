@@ -1,33 +1,32 @@
-#!/bin/Bash
+#!/bin/bash
+
 START_TIME=$(date +%s)
 USERID=$(id -u)
-
 R="\e[31m"
 G="\e[32m"
-y="\e[33m"
+Y="\e[33m"
 N="\e[0m"
-
 LOGS_FOLDER="/var/log/roboshop-logs"
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-SCRIPT_PATH=$PWD
+SCRIPT_DIR=$PWD
 
 mkdir -p $LOGS_FOLDER
-echo "script started executing at: $(date)" |tee -a $LOG_FILE
+echo "Script started executing at: $(date)" | tee -a $LOG_FILE
 
-#check the user have root access or not
+# check the user has root priveleges or not
 if [ $USERID -ne 0 ]
 then
-    echo -e "$R error: please run with root access $N " &>>$LOG_FILE
-    exit 1
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE
+    exit 1 #give other than 0 upto 127
 else
-    echo -e "$G running with root access $N" | tee -a $LOG_FILE
+    echo "You are running with root access" | tee -a $LOG_FILE
 fi
 
-echo "please enter rabbitmq password to setup"
-read -s RABBITMQ_PASSWORD
+echo "Please enter rabbitmq password to setup"
+read -s RABBITMQ_PASSWD
 
-#validate function takes input as exit status, and what command they tried to install
+# validate functions takes input as exit status, what command they tried to install
 VALIDATE(){
     if [ $1 -eq 0 ]
     then
@@ -39,20 +38,19 @@ VALIDATE(){
 }
 
 cp rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo
-VALIDATE $? "Adding Rabbitmq repo"
+VALIDATE $? "Adding rabbitmq repo"
 
 dnf install rabbitmq-server -y &>>$LOG_FILE
-VALIDATE $? "installing Rabbitmq server"
+VALIDATE $? "Installing rabbitmq server"
 
 systemctl enable rabbitmq-server &>>$LOG_FILE
-VALIDATE $? "enabling Rabbitmq server"
+VALIDATE $? "Enabling rabbitmq server"
 
 systemctl start rabbitmq-server &>>$LOG_FILE
-VALIDATE $? "starting Rabbitmq server"
+VALIDATE $? "Starting rabbitmq server"
 
-rabbitmqctl add_user roboshop $RABBITMQ_PASSWORD &>>$LOG_FILE
-rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
-
+rabbitmqctl add_user roboshop $RABBITMQ_PASSWD &>>$LOG_FILE
+rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*" &>>$LOG_FILE
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(( $END_TIME - $START_TIME ))

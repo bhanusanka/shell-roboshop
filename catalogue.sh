@@ -70,6 +70,7 @@ VALIDATE $? "Copying catalogue service"
 
 systemctl daemon-reload &>>$LOG_FILE
 systemctl enable catalogue  &>>$LOG_FILE
+systemctl unmask catalogue.service
 systemctl start catalogue
 VALIDATE $? "Starting catalogue"
 

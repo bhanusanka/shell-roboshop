@@ -15,6 +15,54 @@ LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 mkdir -p $LOGS_FOLDER
 echo "script started executing at: $(date)" |tee -a $LOG_FILE
 
+app_setup()
+{
+    id roboshop &>>$LOG_FILE
+    if [ $? -ne 0 ]
+    then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        VALIDATE $? "creating roboshop system user"
+    else
+        echo -e "system user roboshop already created .....$y skipping   $N"
+    fi
+
+    mkdir -p /app 
+    VALIDATE $? "creating app directory"
+
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOG_FILE
+    VALIDATE $? "Downloading $app_name"
+
+    rm -rf /app/*
+    cd /app 
+    unzip /tmp/$app_name.zip &>>$LOG_FILE
+    VALIDATE $? "unzipping $app_name"
+}
+
+nodejs_setup()
+{
+    dnf module disable nodejs -y &>>$LOG_FILE
+    VALIDATE $? "disabling default nodejs"
+
+    dnf module enable nodejs:20 -y &>>$LOG_FILE
+    VALIDATE $? "enabling nodejs"
+
+    dnf install nodejs -y &>>$LOG_FILE
+    VALIDATE $? "installing nodejs"
+
+    npm install 
+    VALIDATE $? "installing dependencies"
+}
+
+systemd_setup()
+{
+    cp $SCRIPT_PATH/$app_name.service /etc/systemd/system/$app_name.service
+    VALIDATE $? "Copying $app_name service"
+
+    systemctl daemon-reload &>>$LOG_FILE
+    systemctl enable $app_name &>>$LOG_FILE
+    systemctl start $app_name
+    VALIDATE $? "Starting $app_name"
+}
 #check the user have root access or not
 check_root()
 {
@@ -26,6 +74,7 @@ check_root()
         echo "running with root access" | tee -a $LOG_FILE
     fi
 }
+
 
 #validate function takes input as exit status, and what command they tried to install
 VALIDATE(){

@@ -25,12 +25,12 @@ else
 fi
 
 #validate function takes input as exit status, and what command they tried to install
-VALIDATE() {
+VALIDATE(){
     if [ $1 -eq 0 ]
-    then 
-        echo -e "Installing $2 is ...$G succcess $N" |tee -a $LOG_FILE
-    else    
-        echo -e "installing $2 is ...$R failure $N" |tee -a $LOG_FILE
+    then
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE
+    else
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE
         exit 1
     fi
 }

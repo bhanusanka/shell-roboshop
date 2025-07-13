@@ -24,12 +24,12 @@ else
 fi
 
 #validate function takes input as exit status, and what command they tried to install
-VALIDATE() {
+VALIDATE(){
     if [ $1 -eq 0 ]
-    then 
-        echo -e "Installing $2 is ...$G succcess $N" |tee -a $LOG_FILE
-    else    
-        echo -e "installing $2 is ...$R failure $N" |tee -a $LOG_FILE
+    then
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE
+    else
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE
         exit 1
     fi
 }
@@ -37,16 +37,20 @@ VALIDATE() {
 cp mongo.repo /etc/yum.repos.d/mongo.repo
 VALIDATE $? "copying mongodb repo"
 
-dnf install mongodb-org -y
+dnf install mongodb-org -y &>>$LOG_FILE
 VALIDATE $? "installing  mongodb"
 
-systemctl enable mongod 
+systemctl enable mongod &>>$LOG_FILE
 VALIDATE $? "enabling mongodb"
 
-systemctl start mongod 
+systemctl start mongod &>>$LOG_FILE
 VALIDATE $? "starting mongodb"
 
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+VALIDATE $? "editing  mongodb conf file for remote connections"
+
+systemctl restart mongod &>>$LOG_FILE
+VALIDATE $? "restarting mongodb"
 
 
 

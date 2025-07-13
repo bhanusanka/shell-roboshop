@@ -81,12 +81,16 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>$LOG_FILE
 VALIDATE $? "install mysql"
 
-
-mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/schema.sql &>>$LOG_FILE
-mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/app-user.sql  &>>$LOG_FILE
-mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/master-data.sql &>>$LOG_FILE
-VALIDATE $? "loading data into mysql"
-
+mysql -h mysql.daws84s.site -u root -p$MYSQL_ROOT_PASSWORD -e 'use cities' &>>$LOG_FILE
+if [ $? -ne 0 ]
+then
+    mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/schema.sql &>>$LOG_FILE
+    mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/app-user.sql  &>>$LOG_FILE
+    mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/master-data.sql &>>$LOG_FILE
+    VALIDATE $? "loading data into mysql"
+else
+    echo -e "Data is already loaded into MySQL ... $Y SKIPPING $N"
+fi
 
 systemctl restart shipping
 VALIDATE $? "Restart shipping"

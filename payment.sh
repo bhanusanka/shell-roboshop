@@ -35,10 +35,10 @@ VALIDATE(){
     fi
 }
 
-dnf install python3 gcc python3-devel -y &>>$LOGS_FILE
+dnf install python3 gcc python3-devel -y &>>$LOG_FILE
 VALIDATE $? "Installing python3 packages"
 
-id roboshop &>>$LOGS_FILE
+id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]
 then
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
@@ -58,20 +58,20 @@ cd /app
 unzip /tmp/payment.zip &>>$LOG_FILE
 VALIDATE $? "unzipping payment"
 
-pip3 install -r requirements.txt &>>$LOGS_FILE
+pip3 install -r requirements.txt &>>$LOG_FILE
 VALIDATE $? "Installing depencies"
 
-cp $SCRIPT_PATH/payment.service /etc/systemd/system/payment.service&>>$LOGS_FILE
+cp $SCRIPT_PATH/payment.service /etc/systemd/system/payment.service &>>$LOG_FILE
 VALIDATE $? "Copying payment service"
 
-systemctl daemon-reload &>>$LOGS_FILE
+systemctl daemon-reload &>>$LOG_FILE
 VALIDATE $? "Daemon-reload"
 
 
-systemctl enable payment &>>$LOGS_FILE
+systemctl enable payment &>>$LOG_FILE
 VALIDATE $? "Enabling Payment"
 
-systemctl start payment  &>>$LOGS_FILE
+systemctl start payment  &>>$LOG_FILE
 VALIDATE $? "Starting payment"
 
 

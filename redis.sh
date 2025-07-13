@@ -20,7 +20,7 @@ then
     echo -e "$R error: please run with root access $N " &>>$LOG_FILE
     exit 1
 else
-    echo "running with root access" &>>$LOG_FILE
+    echo "running with root access" | tee -a $LOG_FILE
 fi
 
 #validate function takes input as exit status, and what command they tried to install

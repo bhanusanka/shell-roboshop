@@ -24,6 +24,8 @@ else
     echo -e "$G running with root access $N" | tee -a $LOG_FILE
 fi
 
+echo "please enter root password to setup"
+read -s MYSQL_ROOT_PASSWORD
 
 #validate function takes input as exit status, and what command they tried to install
 VALIDATE(){
@@ -80,9 +82,9 @@ dnf install mysql -y &>>$LOG_FILE
 VALIDATE $? "install mysql"
 
 
-mysql -h mysql.sankadevops.site -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOG_FILE
-mysql -h mysql.sankadevops.site -uroot -pRoboShop@1 < /app/db/app-user.sql  &>>$LOG_FILE
-mysql -h mysql.sankadevops.site -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
+mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/schema.sql &>>$LOG_FILE
+mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/app-user.sql  &>>$LOG_FILE
+mysql -h mysql.sankadevops.site -uroot -pMYSQL_ROOT_PASSWORD < /app/db/master-data.sql &>>$LOG_FILE
 VALIDATE $? "loading data into mysql"
 
 

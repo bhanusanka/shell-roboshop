@@ -51,6 +51,7 @@ then
     VALIDATE $? "creating roboshop system user"
 else
     echo "system user roboshop already created .....$y skipping   $N"
+fi
 
 mkdir -p /app 
 VALIDATE $? "creating app directory"
